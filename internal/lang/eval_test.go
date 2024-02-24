@@ -72,6 +72,9 @@ func TestScopeEvalContext(t *testing.T) {
 		TerraformAttrs: map[string]cty.Value{
 			"workspace": cty.StringVal("default"),
 		},
+		TofuAttrs: map[string]cty.Value{
+			"workspace": cty.StringVal("default"),
+		},
 		InputVariables: map[string]cty.Value{
 			"baz": cty.StringVal("boop"),
 		},
@@ -344,6 +347,14 @@ func TestScopeEvalContext(t *testing.T) {
 			`terraform.workspace`,
 			map[string]cty.Value{
 				"terraform": cty.ObjectVal(map[string]cty.Value{
+					"workspace": cty.StringVal("default"),
+				}),
+			},
+		},
+		{
+			`tofu.workspace`,
+			map[string]cty.Value{
+				"tofu": cty.ObjectVal(map[string]cty.Value{
 					"workspace": cty.StringVal("default"),
 				}),
 			},
@@ -735,6 +746,9 @@ func TestScopeEvalSelfBlock(t *testing.T) {
 		TerraformAttrs: map[string]cty.Value{
 			"workspace": cty.StringVal("default"),
 		},
+		TofuAttrs: map[string]cty.Value{
+			"workspace": cty.StringVal("default"),
+		},
 	}
 	schema := &configschema.Block{
 		Attributes: map[string]*configschema.Attribute{
@@ -809,6 +823,13 @@ func TestScopeEvalSelfBlock(t *testing.T) {
 		},
 		{
 			Config: `attr = terraform.workspace`,
+			Want: map[string]cty.Value{
+				"attr": cty.StringVal("default"),
+				"num":  cty.NullVal(cty.Number),
+			},
+		},
+		{
+			Config: `attr = tofu.workspace`,
 			Want: map[string]cty.Value{
 				"attr": cty.StringVal("default"),
 				"num":  cty.NullVal(cty.Number),

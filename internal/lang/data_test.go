@@ -21,6 +21,7 @@ type dataForTests struct {
 	Modules        map[string]cty.Value
 	PathAttrs      map[string]cty.Value
 	TerraformAttrs map[string]cty.Value
+	TofuAttrs      map[string]cty.Value
 	InputVariables map[string]cty.Value
 	CheckBlocks    map[string]cty.Value
 }
@@ -67,6 +68,10 @@ func (d *dataForTests) GetPathAttr(addr addrs.PathAttr, rng tfdiags.SourceRange)
 
 func (d *dataForTests) GetTerraformAttr(addr addrs.TerraformAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
 	return d.TerraformAttrs[addr.Name], nil
+}
+
+func (d *dataForTests) GetTofuAttr(addr addrs.TofuAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
+	return d.TofuAttrs[addr.Name], nil
 }
 
 func (d *dataForTests) GetOutput(addr addrs.OutputValue, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {

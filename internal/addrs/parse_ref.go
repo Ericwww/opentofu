@@ -333,6 +333,14 @@ func parseRef(traversal hcl.Traversal) (*Reference, tfdiags.Diagnostics) {
 			Remaining:   remain,
 		}, diags
 
+	case "tofu":
+		name, rng, remain, diags := parseSingleAttrRef(traversal)
+		return &Reference{
+			Subject:     TofuAttr{Name: name},
+			SourceRange: tfdiags.SourceRangeFromHCL(rng),
+			Remaining:   remain,
+		}, diags
+
 	case "var":
 		name, rng, remain, diags := parseSingleAttrRef(traversal)
 		return &Reference{
