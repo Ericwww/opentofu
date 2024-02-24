@@ -47,6 +47,31 @@ func TestEvaluatorGetTerraformAttr(t *testing.T) {
 	})
 }
 
+func TestEvaluatorGetTofuAttr(t *testing.T) {
+	evaluator := &Evaluator{
+		Meta: &ContextMeta{
+			Env: "foo",
+		},
+	}
+	data := &evaluationStateData{
+		Evaluator: evaluator,
+	}
+	scope := evaluator.Scope(data, nil, nil)
+
+	t.Run("workspace", func(t *testing.T) {
+		want := cty.StringVal("foo")
+		got, diags := scope.Data.GetTofuAttr(addrs.TofuAttr{
+			Name: "workspace",
+		}, tfdiags.SourceRange{})
+		if len(diags) != 0 {
+			t.Errorf("unexpected diagnostics %s", spew.Sdump(diags))
+		}
+		if !got.RawEquals(want) {
+			t.Errorf("wrong result %q; want %q", got, want)
+		}
+	})
+}
+
 func TestEvaluatorGetPathAttr(t *testing.T) {
 	evaluator := &Evaluator{
 		Meta: &ContextMeta{
