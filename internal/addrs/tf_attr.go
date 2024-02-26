@@ -5,10 +5,10 @@
 
 package addrs
 
-func NewTerraformAttr(objectName, name string) TerraformAttr {
+func NewTerraformAttr(alias, name string) TerraformAttr {
 	return TerraformAttr{
-		name:       name,
-		objectName: objectName,
+		name:  name,
+		alias: alias,
 	}
 }
 
@@ -16,20 +16,20 @@ func NewTerraformAttr(objectName, name string) TerraformAttr {
 // the interpolation scope, like "terraform.workspace" and "tofu.workspace".
 type TerraformAttr struct {
 	referenceable
-	name       string
-	objectName string
+	name  string
+	alias string
 }
 
 func (ta TerraformAttr) Name() string {
 	return ta.name
 }
 
-func (ta TerraformAttr) ObjectName() string {
-	return ta.objectName
+func (ta TerraformAttr) Alias() string {
+	return ta.alias
 }
 
 func (ta TerraformAttr) String() string {
-	return ta.objectName + "." + ta.name
+	return ta.alias + "." + ta.name
 }
 
 func (ta TerraformAttr) UniqueKey() UniqueKey {
