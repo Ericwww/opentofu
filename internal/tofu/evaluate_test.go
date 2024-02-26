@@ -33,11 +33,9 @@ func TestEvaluatorGetTerraformAttr(t *testing.T) {
 	}
 	scope := evaluator.Scope(data, nil, nil)
 
-	t.Run("workspace", func(t *testing.T) {
+	t.Run("terraform.workspace", func(t *testing.T) {
 		want := cty.StringVal("foo")
-		got, diags := scope.Data.GetTerraformAttr(addrs.TerraformAttr{
-			Name: "workspace",
-		}, tfdiags.SourceRange{})
+		got, diags := scope.Data.GetTerraformAttr(addrs.NewTerraformAttr("terraform", "workspace"), tfdiags.SourceRange{})
 		if len(diags) != 0 {
 			t.Errorf("unexpected diagnostics %s", spew.Sdump(diags))
 		}
@@ -45,24 +43,10 @@ func TestEvaluatorGetTerraformAttr(t *testing.T) {
 			t.Errorf("wrong result %q; want %q", got, want)
 		}
 	})
-}
 
-func TestEvaluatorGetTofuAttr(t *testing.T) {
-	evaluator := &Evaluator{
-		Meta: &ContextMeta{
-			Env: "foo",
-		},
-	}
-	data := &evaluationStateData{
-		Evaluator: evaluator,
-	}
-	scope := evaluator.Scope(data, nil, nil)
-
-	t.Run("workspace", func(t *testing.T) {
+	t.Run("tofu.workspace", func(t *testing.T) {
 		want := cty.StringVal("foo")
-		got, diags := scope.Data.GetTofuAttr(addrs.TofuAttr{
-			Name: "workspace",
-		}, tfdiags.SourceRange{})
+		got, diags := scope.Data.GetTerraformAttr(addrs.NewTerraformAttr("tofu", "workspace"), tfdiags.SourceRange{})
 		if len(diags) != 0 {
 			t.Errorf("unexpected diagnostics %s", spew.Sdump(diags))
 		}

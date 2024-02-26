@@ -913,16 +913,8 @@ func (d *evaluationStateData) getResourceSchema(addr addrs.Resource, providerAdd
 }
 
 func (d *evaluationStateData) GetTerraformAttr(addr addrs.TerraformAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
-	return d.getTerraformOrTofuAttr(addr.ObjectName(), addr.Name, rng)
-}
-
-func (d *evaluationStateData) GetTofuAttr(addr addrs.TofuAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
-	return d.getTerraformOrTofuAttr(addr.ObjectName(), addr.Name, rng)
-}
-
-func (d *evaluationStateData) getTerraformOrTofuAttr(objectName, addrName string, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
 	var diags tfdiags.Diagnostics
-	switch addrName {
+	switch addr.Name() {
 	case "workspace":
 		workspaceName := d.Evaluator.Meta.Env
 		return cty.StringVal(workspaceName), diags
@@ -933,8 +925,8 @@ func (d *evaluationStateData) getTerraformOrTofuAttr(objectName, addrName string
 		// removed.
 		diags = diags.Append(&hcl.Diagnostic{
 			Severity: hcl.DiagError,
-			Summary:  fmt.Sprintf("Invalid %q attribute", objectName),
-			Detail:   fmt.Sprintf(`The %s.env attribute was deprecated in v0.10 and removed in v0.12. The "state environment" concept was renamed to "workspace" in v0.12, and so the workspace name can now be accessed using the %s.workspace attribute.`, objectName, objectName),
+			Summary:  fmt.Sprintf("Invalid %q attribute", addr.ObjectName()),
+			Detail:   fmt.Sprintf(`The %s.env attribute was deprecated in v0.10 and removed in v0.12. The "state environment" concept was renamed to "workspace" in v0.12, and so the workspace name can now be accessed using the %s.workspace attribute.`, addr.ObjectName(), addr.ObjectName()),
 			Subject:  rng.ToHCL().Ptr(),
 		})
 		return cty.DynamicVal, diags
@@ -942,8 +934,8 @@ func (d *evaluationStateData) getTerraformOrTofuAttr(objectName, addrName string
 	default:
 		diags = diags.Append(&hcl.Diagnostic{
 			Severity: hcl.DiagError,
-			Summary:  fmt.Sprintf("Invalid %q attribute", objectName),
-			Detail:   fmt.Sprintf(`The %q object does not have an attribute named %q. The only supported attribute is %s.workspace, the name of the currently-selected workspace.`, objectName, addrName, objectName),
+			Summary:  fmt.Sprintf("Invalid %q attribute", addr.ObjectName()),
+			Detail:   fmt.Sprintf(`The %q object does not have an attribute named %q. The only supported attribute is %s.workspace, the name of the currently-selected workspace.`, addr.ObjectName(), addr.Name(), addr.ObjectName()),
 			Subject:  rng.ToHCL().Ptr(),
 		})
 		return cty.DynamicVal, diags

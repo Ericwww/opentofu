@@ -103,7 +103,6 @@ func (s *Scope) EvalSelfBlock(body hcl.Body, self cty.Value, schema *configschem
 	diags = diags.Append(refDiags)
 
 	terraformAttrs := map[string]cty.Value{}
-	tofuAttrs := map[string]cty.Value{}
 	pathAttrs := map[string]cty.Value{}
 
 	// We could always load the static values for Path and Terraform values,
@@ -124,12 +123,7 @@ func (s *Scope) EvalSelfBlock(body hcl.Body, self cty.Value, schema *configschem
 		case addrs.TerraformAttr:
 			val, valDiags := normalizeRefValue(s.Data.GetTerraformAttr(subj, ref.SourceRange))
 			diags = diags.Append(valDiags)
-			terraformAttrs[subj.Name] = val
-
-		case addrs.TofuAttr:
-			val, valDiags := normalizeRefValue(s.Data.GetTofuAttr(subj, ref.SourceRange))
-			diags = diags.Append(valDiags)
-			tofuAttrs[subj.Name] = val
+			terraformAttrs[subj.Name()] = val
 
 		case addrs.CountAttr, addrs.ForEachAttr:
 			// each and count have already been handled.
@@ -148,7 +142,7 @@ func (s *Scope) EvalSelfBlock(body hcl.Body, self cty.Value, schema *configschem
 
 	vals["path"] = cty.ObjectVal(pathAttrs)
 	vals["terraform"] = cty.ObjectVal(terraformAttrs)
-	vals["tofu"] = cty.ObjectVal(tofuAttrs)
+	vals["tofu"] = cty.ObjectVal(terraformAttrs)
 
 	ctx := &hcl.EvalContext{
 		Variables: vals,
@@ -294,7 +288,6 @@ func (s *Scope) evalContext(refs []*addrs.Reference, selfAddr addrs.Referenceabl
 	outputValues := map[string]cty.Value{}
 	pathAttrs := map[string]cty.Value{}
 	terraformAttrs := map[string]cty.Value{}
-	tofuAttrs := map[string]cty.Value{}
 	countAttrs := map[string]cty.Value{}
 	forEachAttrs := map[string]cty.Value{}
 	checkBlocks := map[string]cty.Value{}
@@ -406,12 +399,7 @@ func (s *Scope) evalContext(refs []*addrs.Reference, selfAddr addrs.Referenceabl
 		case addrs.TerraformAttr:
 			val, valDiags := normalizeRefValue(s.Data.GetTerraformAttr(subj, rng))
 			diags = diags.Append(valDiags)
-			terraformAttrs[subj.Name] = val
-
-		case addrs.TofuAttr:
-			val, valDiags := normalizeRefValue(s.Data.GetTofuAttr(subj, rng))
-			diags = diags.Append(valDiags)
-			tofuAttrs[subj.Name] = val
+			terraformAttrs[subj.Name()] = val
 
 		case addrs.CountAttr:
 			val, valDiags := normalizeRefValue(s.Data.GetCountAttr(subj, rng))
@@ -455,7 +443,7 @@ func (s *Scope) evalContext(refs []*addrs.Reference, selfAddr addrs.Referenceabl
 	vals["local"] = cty.ObjectVal(localValues)
 	vals["path"] = cty.ObjectVal(pathAttrs)
 	vals["terraform"] = cty.ObjectVal(terraformAttrs)
-	vals["tofu"] = cty.ObjectVal(tofuAttrs)
+	vals["tofu"] = cty.ObjectVal(terraformAttrs)
 	vals["count"] = cty.ObjectVal(countAttrs)
 	vals["each"] = cty.ObjectVal(forEachAttrs)
 

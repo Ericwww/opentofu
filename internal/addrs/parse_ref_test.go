@@ -606,9 +606,7 @@ func TestParseRef(t *testing.T) {
 		{
 			`terraform.workspace`,
 			&Reference{
-				Subject: TerraformAttr{
-					Name: "workspace",
-				},
+				Subject: NewTerraformAttr("terraform", "workspace"),
 				SourceRange: tfdiags.SourceRange{
 					Start: tfdiags.SourcePos{Line: 1, Column: 1, Byte: 0},
 					End:   tfdiags.SourcePos{Line: 1, Column: 20, Byte: 19},
@@ -619,9 +617,7 @@ func TestParseRef(t *testing.T) {
 		{
 			`terraform.workspace.blah`,
 			&Reference{
-				Subject: TerraformAttr{
-					Name: "workspace",
-				},
+				Subject: NewTerraformAttr("terraform", "workspace"),
 				SourceRange: tfdiags.SourceRange{
 					Start: tfdiags.SourcePos{Line: 1, Column: 1, Byte: 0},
 					End:   tfdiags.SourcePos{Line: 1, Column: 20, Byte: 19},
@@ -653,9 +649,7 @@ func TestParseRef(t *testing.T) {
 		{
 			`tofu.workspace`,
 			&Reference{
-				Subject: TofuAttr{
-					Name: "workspace",
-				},
+				Subject: NewTerraformAttr("tofu", "workspace"),
 				SourceRange: tfdiags.SourceRange{
 					Start: tfdiags.SourcePos{Line: 1, Column: 1, Byte: 0},
 					End:   tfdiags.SourcePos{Line: 1, Column: 15, Byte: 14},
@@ -666,9 +660,7 @@ func TestParseRef(t *testing.T) {
 		{
 			`tofu.workspace.blah`,
 			&Reference{
-				Subject: TofuAttr{
-					Name: "workspace",
-				},
+				Subject: NewTerraformAttr("tofu", "workspace"),
 				SourceRange: tfdiags.SourceRange{
 					Start: tfdiags.SourcePos{Line: 1, Column: 1, Byte: 0},
 					End:   tfdiags.SourcePos{Line: 1, Column: 15, Byte: 14},
