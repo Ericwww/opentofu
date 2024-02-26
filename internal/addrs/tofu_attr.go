@@ -13,7 +13,7 @@ type TofuAttr struct {
 }
 
 func (ta TofuAttr) String() string {
-	return "tofu." + ta.Name
+	return ta.ObjectName() + "." + ta.Name
 }
 
 func (ta TofuAttr) UniqueKey() UniqueKey {
@@ -21,3 +21,5 @@ func (ta TofuAttr) UniqueKey() UniqueKey {
 }
 
 func (ta TofuAttr) uniqueKeySigil() {}
+
+func (ta TofuAttr) ObjectName() string { return "tofu" }

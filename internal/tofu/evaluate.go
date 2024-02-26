@@ -913,40 +913,16 @@ func (d *evaluationStateData) getResourceSchema(addr addrs.Resource, providerAdd
 }
 
 func (d *evaluationStateData) GetTerraformAttr(addr addrs.TerraformAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
-	var diags tfdiags.Diagnostics
-	switch addr.Name {
-
-	case "workspace":
-		workspaceName := d.Evaluator.Meta.Env
-		return cty.StringVal(workspaceName), diags
-
-	case "env":
-		// Prior to Terraform 0.12 there was an attribute "env", which was
-		// an alias name for "workspace". This was deprecated and is now
-		// removed.
-		diags = diags.Append(&hcl.Diagnostic{
-			Severity: hcl.DiagError,
-			Summary:  `Invalid "terraform" attribute`,
-			Detail:   `The terraform.env attribute was deprecated in v0.10 and removed in v0.12. The "state environment" concept was renamed to "workspace" in v0.12, and so the workspace name can now be accessed using the terraform.workspace attribute.`,
-			Subject:  rng.ToHCL().Ptr(),
-		})
-		return cty.DynamicVal, diags
-
-	default:
-		diags = diags.Append(&hcl.Diagnostic{
-			Severity: hcl.DiagError,
-			Summary:  `Invalid "terraform" attribute`,
-			Detail:   fmt.Sprintf(`The "terraform" object does not have an attribute named %q. The only supported attribute is terraform.workspace, the name of the currently-selected workspace.`, addr.Name),
-			Subject:  rng.ToHCL().Ptr(),
-		})
-		return cty.DynamicVal, diags
-	}
+	return d.getTerraformOrTofuAttr(addr.ObjectName(), addr.Name, rng)
 }
 
 func (d *evaluationStateData) GetTofuAttr(addr addrs.TofuAttr, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
-	var diags tfdiags.Diagnostics
-	switch addr.Name {
+	return d.getTerraformOrTofuAttr(addr.ObjectName(), addr.Name, rng)
+}
 
+func (d *evaluationStateData) getTerraformOrTofuAttr(objectName, addrName string, rng tfdiags.SourceRange) (cty.Value, tfdiags.Diagnostics) {
+	var diags tfdiags.Diagnostics
+	switch addrName {
 	case "workspace":
 		workspaceName := d.Evaluator.Meta.Env
 		return cty.StringVal(workspaceName), diags
@@ -957,8 +933,8 @@ func (d *evaluationStateData) GetTofuAttr(addr addrs.TofuAttr, rng tfdiags.Sourc
 		// removed.
 		diags = diags.Append(&hcl.Diagnostic{
 			Severity: hcl.DiagError,
-			Summary:  `Invalid "tofu" attribute`,
-			Detail:   `The tofu.env attribute was deprecated in v0.10 and removed in v0.12. The "state environment" concept was renamed to "workspace" in v0.12, and so the workspace name can now be accessed using the tofu.workspace attribute.`,
+			Summary:  fmt.Sprintf("Invalid %q attribute", objectName),
+			Detail:   fmt.Sprintf(`The %s.env attribute was deprecated in v0.10 and removed in v0.12. The "state environment" concept was renamed to "workspace" in v0.12, and so the workspace name can now be accessed using the %s.workspace attribute.`, objectName, objectName),
 			Subject:  rng.ToHCL().Ptr(),
 		})
 		return cty.DynamicVal, diags
@@ -966,8 +942,8 @@ func (d *evaluationStateData) GetTofuAttr(addr addrs.TofuAttr, rng tfdiags.Sourc
 	default:
 		diags = diags.Append(&hcl.Diagnostic{
 			Severity: hcl.DiagError,
-			Summary:  `Invalid "tofu" attribute`,
-			Detail:   fmt.Sprintf(`The "tofu" object does not have an attribute named %q. The only supported attribute is tofu.workspace, the name of the currently-selected workspace.`, addr.Name),
+			Summary:  fmt.Sprintf("Invalid %q attribute", objectName),
+			Detail:   fmt.Sprintf(`The %q object does not have an attribute named %q. The only supported attribute is %s.workspace, the name of the currently-selected workspace.`, objectName, addrName, objectName),
 			Subject:  rng.ToHCL().Ptr(),
 		})
 		return cty.DynamicVal, diags

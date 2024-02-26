@@ -13,7 +13,7 @@ type TerraformAttr struct {
 }
 
 func (ta TerraformAttr) String() string {
-	return "terraform." + ta.Name
+	return ta.ObjectName() + "." + ta.Name
 }
 
 func (ta TerraformAttr) UniqueKey() UniqueKey {
@@ -21,3 +21,5 @@ func (ta TerraformAttr) UniqueKey() UniqueKey {
 }
 
 func (ta TerraformAttr) uniqueKeySigil() {}
+
+func (ta TerraformAttr) ObjectName() string { return "terraform" }

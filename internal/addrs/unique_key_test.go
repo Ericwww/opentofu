@@ -20,6 +20,7 @@ func TestUniqueKeyer(t *testing.T) {
 		CountAttr{Name: "index"},
 		ForEachAttr{Name: "key"},
 		TerraformAttr{Name: "workspace"},
+		TofuAttr{Name: "workspace"},
 		PathAttr{Name: "module"},
 		InputVariable{Name: "foo"},
 		ModuleCall{Name: "foo"},
